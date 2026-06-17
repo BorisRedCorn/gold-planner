@@ -5,7 +5,6 @@ import { GoldCheckbox } from './GoldCheckbox'
 
 interface TaskCardProps {
   task: Task
-  index: number
   onToggle: (id: string) => void
 }
 
@@ -34,14 +33,12 @@ function formatDate(dateStr: string): string {
   })
 }
 
-export function TaskCard({ task, index, onToggle }: TaskCardProps) {
+export function TaskCard({ task, onToggle }: TaskCardProps) {
   return (
     <motion.article
       layout
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={false}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
       className="group glass-card gold-border-glow relative overflow-hidden rounded-xl border border-gold-500/20 p-6 transition-all duration-500"
     >
       <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gold-500/5 blur-2xl transition-all duration-500 group-hover:bg-gold-400/10" />

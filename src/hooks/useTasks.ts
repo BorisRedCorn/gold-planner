@@ -16,7 +16,7 @@ function loadTasks(key: string): Task[] {
   } catch {
     /* ignore corrupted storage */
   }
-  return structuredClone(mockTasks)
+  return JSON.parse(JSON.stringify(mockTasks)) as typeof mockTasks
 }
 
 export function useTasks(userId?: number) {

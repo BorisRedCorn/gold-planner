@@ -86,11 +86,10 @@ function App() {
 
         <div className="space-y-5">
           <AnimatePresence mode="popLayout">
-            {sortedTasks.map((task, index) => (
+            {sortedTasks.map((task) => (
               <TaskCard
                 key={task.id}
                 task={task}
-                index={index}
                 onToggle={toggleTask}
               />
             ))}

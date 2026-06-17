@@ -62,6 +62,7 @@ body {
 }
 
 .gold-gradient-text {
+  color: #d4af37;
   background: linear-gradient(
     90deg,
     #fef3c7 0%,
@@ -72,7 +73,12 @@ body {
   );
   -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .gold-gradient-text {
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 .gold-shimmer {

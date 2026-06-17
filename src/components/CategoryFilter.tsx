@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import type { TaskCategory } from '../types/task'
 import { categoryLabels } from '../types/task'
 
@@ -26,12 +25,7 @@ const filterLabels: Record<TaskCategory | 'all', string> = {
 
 export function CategoryFilter({ active, onChange, counts }: CategoryFilterProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.5 }}
-      className="mb-8 flex flex-wrap justify-center gap-2"
-    >
+    <div className="mb-8 flex flex-wrap justify-center gap-2">
       {categories.map((cat) => (
         <button
           key={cat}
@@ -45,15 +39,8 @@ export function CategoryFilter({ active, onChange, counts }: CategoryFilterProps
         >
           {filterLabels[cat]}
           <span className="ml-1.5 text-xs opacity-60">({counts[cat]})</span>
-          {active === cat && (
-            <motion.div
-              layoutId="activeFilter"
-              className="absolute inset-0 -z-10 rounded-full bg-gold-500/5"
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            />
-          )}
         </button>
       ))}
-    </motion.div>
+    </div>
   )
 }

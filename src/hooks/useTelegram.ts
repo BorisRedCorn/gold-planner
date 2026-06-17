@@ -9,21 +9,48 @@ export interface TelegramUser {
 }
 
 function readTelegramUser(): TelegramUser | null {
-  const tgUser = WebApp.initDataUnsafe?.user
-  if (!tgUser) return null
-  return {
-    id: tgUser.id,
-    first_name: tgUser.first_name,
-    last_name: tgUser.last_name,
-    username: tgUser.username,
+  try {
+    const tgUser = WebApp.initDataUnsafe?.user
+    if (!tgUser) return null
+    return {
+      id: tgUser.id,
+      first_name: tgUser.first_name,
+      last_name: tgUser.last_name,
+      username: tgUser.username,
+    }
+  } catch {
+    return null
   }
 }
 
 function detectTelegram(): boolean {
-  return (
-    WebApp.platform !== 'unknown' ||
-    Boolean(WebApp.initData && WebApp.initData.length > 0)
-  )
+  try {
+    return (
+      WebApp.platform !== 'unknown' ||
+      Boolean(WebApp.initData && WebApp.initData.length > 0)
+    )
+  } catch {
+    return false
+  }
+}
+
+function initTelegramWebApp() {
+  try {
+    WebApp.ready()
+    WebApp.expand()
+
+    if (typeof WebApp.disableVerticalSwipes === 'function') {
+      WebApp.disableVerticalSwipes()
+    }
+    if (typeof WebApp.setHeaderColor === 'function') {
+      WebApp.setHeaderColor('#0a0a0a')
+    }
+    if (typeof WebApp.setBackgroundColor === 'function') {
+      WebApp.setBackgroundColor('#0a0a0a')
+    }
+  } catch (error) {
+    console.warn('Telegram WebApp init failed:', error)
+  }
 }
 
 export function useTelegram() {
@@ -34,13 +61,7 @@ export function useTelegram() {
 
   useEffect(() => {
     if (!isTelegram) return
-
-    WebApp.ready()
-    WebApp.expand()
-    WebApp.disableVerticalSwipes()
-    WebApp.setHeaderColor('#0a0a0a')
-    WebApp.setBackgroundColor('#0a0a0a')
-
+    initTelegramWebApp()
     setUser(readTelegramUser())
   }, [isTelegram])
 
