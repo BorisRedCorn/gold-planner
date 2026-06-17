@@ -1,17 +1,53 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import type { TaskCategory } from './types/task'
+import type { Task, TaskCategory } from './types/task'
+import type { TaskDraft } from './utils/taskHelpers'
 import { Header } from './components/Header'
 import { StatsBar } from './components/StatsBar'
 import { CategoryFilter } from './components/CategoryFilter'
 import { TaskCard } from './components/TaskCard'
+import { TaskFormModal } from './components/TaskFormModal'
 import { useTasks } from './hooks/useTasks'
 import { useTelegram } from './hooks/useTelegram'
 
 function App() {
   const { isTelegram, user } = useTelegram()
-  const { tasks, toggleTask } = useTasks(user?.id)
+  const {
+    tasks,
+    toggleTask,
+    addTask,
+    updateTask,
+    deleteTask,
+    loadDemoTasks,
+    clearAllTasks,
+  } = useTasks(user?.id)
+
   const [activeCategory, setActiveCategory] = useState<TaskCategory | 'all'>('all')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
+
+  const openCreate = () => {
+    setEditingTask(null)
+    setModalOpen(true)
+  }
+
+  const openEdit = (task: Task) => {
+    setEditingTask(task)
+    setModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalOpen(false)
+    setEditingTask(null)
+  }
+
+  const handleSave = (draft: TaskDraft) => {
+    if (editingTask) {
+      updateTask(editingTask.id, draft)
+    } else {
+      addTask(draft)
+    }
+  }
 
   const stats = useMemo(() => {
     const completed = tasks.filter((t) => t.completed).length
@@ -65,7 +101,7 @@ function App() {
 
       <main
         className={`relative mx-auto max-w-4xl px-4 md:px-8 ${
-          isTelegram ? 'py-6 pb-10' : 'py-12 md:py-16'
+          isTelegram ? 'py-6 pb-24' : 'py-12 pb-24 md:py-16'
         }`}
       >
         <Header />
@@ -77,6 +113,36 @@ function App() {
         )}
 
         <StatsBar {...stats} />
+
+        <div className="mb-8 flex flex-wrap justify-center gap-3">
+          <button
+            type="button"
+            onClick={openCreate}
+            className="cursor-pointer rounded-full border border-gold-500/50 bg-gold-500/15 px-6 py-3 font-serif text-lg text-gold-300 shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all hover:bg-gold-500/25 hover:shadow-[0_0_30px_rgba(212,175,55,0.25)]"
+          >
+            ✦ Новая задача
+          </button>
+          {tasks.length === 0 && (
+            <button
+              type="button"
+              onClick={loadDemoTasks}
+              className="cursor-pointer rounded-full border border-gold-500/20 px-5 py-3 text-sm text-gold-600/70 transition-colors hover:border-gold-500/40 hover:text-gold-500"
+            >
+              Загрузить примеры
+            </button>
+          )}
+          {tasks.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('Удалить все задачи?')) clearAllTasks()
+              }}
+              className="cursor-pointer rounded-full border border-gold-500/10 px-5 py-3 text-sm text-zinc-600 transition-colors hover:border-red-500/30 hover:text-red-400/80"
+            >
+              Очистить всё
+            </button>
+          )}
+        </div>
 
         <CategoryFilter
           active={activeCategory}
@@ -91,6 +157,8 @@ function App() {
                 key={task.id}
                 task={task}
                 onToggle={toggleTask}
+                onEdit={openEdit}
+                onDelete={deleteTask}
               />
             ))}
           </AnimatePresence>
@@ -98,8 +166,11 @@ function App() {
 
         {sortedTasks.length === 0 && (
           <div className="glass-card rounded-xl border border-gold-500/15 p-12 text-center">
-            <p className="font-serif text-xl text-gold-500/50">
-              Нет задач в этой категории
+            <p className="mb-2 font-serif text-xl text-gold-500/50">
+              {tasks.length === 0 ? 'Задач пока нет' : 'Нет задач в этой категории'}
+            </p>
+            <p className="text-sm text-zinc-600">
+              Нажмите «✦ Новая задача», чтобы добавить свою
             </p>
           </div>
         )}
@@ -110,6 +181,24 @@ function App() {
           </p>
         </footer>
       </main>
+
+      <TaskFormModal
+        open={modalOpen}
+        task={editingTask}
+        onClose={closeModal}
+        onSave={handleSave}
+      />
+
+      {isTelegram && (
+        <button
+          type="button"
+          onClick={openCreate}
+          aria-label="Новая задача"
+          className="fixed right-5 bottom-6 z-40 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-gold-500/50 bg-gold-500/20 text-2xl text-gold-300 shadow-[0_0_30px_rgba(212,175,55,0.3)] backdrop-blur-sm"
+        >
+          +
+        </button>
+      )}
     </div>
   )
 }
