@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion'
+import type { Category } from '../types/category'
+import { categoryIcon, categoryLabel } from '../types/category'
 import type { Task } from '../types/task'
-import { categoryLabels, priorityLabels } from '../types/task'
+import { priorityLabels } from '../types/task'
 import { GoldCheckbox } from './GoldCheckbox'
 
 interface TaskCardProps {
   task: Task
+  categories: Category[]
   onToggle: (id: string) => void
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
@@ -17,16 +20,6 @@ const priorityStyles: Record<Task['priority'], string> = {
   low: 'border-zinc-500/40 text-zinc-400 bg-zinc-900/30',
 }
 
-const categoryIcons: Record<Task['category'], string> = {
-  kitchen: '◆',
-  service: '◇',
-  wine: '◈',
-  events: '✦',
-  suppliers: '◉',
-  staff: '◎',
-  menu: '❖',
-}
-
 function formatDate(dateStr: string): string {
   if (!dateStr) return '—'
   return new Date(dateStr).toLocaleDateString('ru-RU', {
@@ -36,7 +29,7 @@ function formatDate(dateStr: string): string {
   })
 }
 
-export function TaskCard({ task, onToggle, onEdit, onDelete }: TaskCardProps) {
+export function TaskCard({ task, categories, onToggle, onEdit, onDelete }: TaskCardProps) {
   const handleDelete = () => {
     if (window.confirm('Удалить эту задачу?')) {
       onDelete(task.id)
@@ -84,8 +77,8 @@ export function TaskCard({ task, onToggle, onEdit, onDelete }: TaskCardProps) {
         <div className="min-w-0 flex-1">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-500/5 px-3 py-0.5 text-xs tracking-widest text-gold-400/90 uppercase">
-              <span className="text-gold-500">{categoryIcons[task.category]}</span>
-              {categoryLabels[task.category]}
+              <span className="text-gold-500">{categoryIcon(categories, task.category)}</span>
+              {categoryLabel(categories, task.category)}
             </span>
             <span
               className={`rounded-full border px-2.5 py-0.5 text-xs tracking-wide uppercase ${priorityStyles[task.priority]}`}

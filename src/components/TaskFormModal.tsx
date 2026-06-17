@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import type { Category } from '../types/category'
 import type { Task } from '../types/task'
+import { priorityLabels } from '../types/task'
 import {
-  allCategories,
   allPriorities,
   emptyTaskDraft,
   taskToDraft,
   type TaskDraft,
 } from '../utils/taskHelpers'
-import { categoryLabels, priorityLabels } from '../types/task'
 
 interface TaskFormModalProps {
   open: boolean
   task?: Task | null
+  categories: Category[]
+  defaultCategoryId: string
   onClose: () => void
   onSave: (draft: TaskDraft) => void
 }
@@ -22,15 +24,22 @@ const inputClass =
 
 const labelClass = 'mb-1.5 block text-xs tracking-widest text-gold-600/70 uppercase'
 
-export function TaskFormModal({ open, task, onClose, onSave }: TaskFormModalProps) {
-  const [draft, setDraft] = useState<TaskDraft>(emptyTaskDraft)
+export function TaskFormModal({
+  open,
+  task,
+  categories,
+  defaultCategoryId,
+  onClose,
+  onSave,
+}: TaskFormModalProps) {
+  const [draft, setDraft] = useState<TaskDraft>(() => emptyTaskDraft(defaultCategoryId))
   const isEdit = Boolean(task)
 
   useEffect(() => {
     if (open) {
-      setDraft(task ? taskToDraft(task) : emptyTaskDraft())
+      setDraft(task ? taskToDraft(task) : emptyTaskDraft(defaultCategoryId))
     }
-  }, [open, task])
+  }, [open, task, defaultCategoryId])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -103,11 +112,11 @@ export function TaskFormModal({ open, task, onClose, onSave }: TaskFormModalProp
                     id="category"
                     className={inputClass}
                     value={draft.category}
-                    onChange={(e) => set('category', e.target.value as TaskDraft['category'])}
+                    onChange={(e) => set('category', e.target.value)}
                   >
-                    {allCategories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {categoryLabels[cat]}
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.icon} {cat.label}
                       </option>
                     ))}
                   </select>

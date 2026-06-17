@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import type { Task, TaskCategory } from './types/task'
+import type { Task } from './types/task'
 import type { TaskDraft } from './utils/taskHelpers'
 import { Header } from './components/Header'
 import { StatsBar } from './components/StatsBar'
 import { CategoryFilter } from './components/CategoryFilter'
+import { CategoryManagerModal } from './components/CategoryManagerModal'
 import { TaskCard } from './components/TaskCard'
 import { TaskFormModal } from './components/TaskFormModal'
 import { useTasks } from './hooks/useTasks'
+import { useCategories } from './hooks/useCategories'
 import { useTelegram } from './hooks/useTelegram'
 
 function App() {
@@ -18,12 +20,22 @@ function App() {
     addTask,
     updateTask,
     deleteTask,
-    loadDemoTasks,
     clearAllTasks,
   } = useTasks(user?.id)
 
-  const [activeCategory, setActiveCategory] = useState<TaskCategory | 'all'>('all')
+  const {
+    categories,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+    resetCategories,
+  } = useCategories(user?.id)
+
+  const defaultCategoryId = categories[0]?.id ?? 'kitchen'
+
+  const [activeCategory, setActiveCategory] = useState<string>('all')
   const [modalOpen, setModalOpen] = useState(false)
+  const [categoriesOpen, setCategoriesOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
 
   const openCreate = () => {
@@ -49,6 +61,11 @@ function App() {
     }
   }
 
+  const handleDeleteCategory = (id: string) => {
+    deleteCategory(id)
+    if (activeCategory === id) setActiveCategory('all')
+  }
+
   const stats = useMemo(() => {
     const completed = tasks.filter((t) => t.completed).length
     const urgent = tasks.filter((t) => t.priority === 'urgent' && !t.completed).length
@@ -61,21 +78,19 @@ function App() {
   }, [tasks])
 
   const categoryCounts = useMemo(() => {
-    const counts: Record<TaskCategory | 'all', number> = {
-      all: tasks.length,
-      kitchen: 0,
-      service: 0,
-      wine: 0,
-      events: 0,
-      suppliers: 0,
-      staff: 0,
-      menu: 0,
-    }
+    const counts: Record<string, number> = { all: tasks.length }
+    categories.forEach((c) => {
+      counts[c.id] = 0
+    })
     tasks.forEach((t) => {
-      counts[t.category]++
+      if (counts[t.category] !== undefined) {
+        counts[t.category]++
+      } else {
+        counts[t.category] = (counts[t.category] ?? 0) + 1
+      }
     })
     return counts
-  }, [tasks])
+  }, [tasks, categories])
 
   const filteredTasks = useMemo(() => {
     if (activeCategory === 'all') return tasks
@@ -122,15 +137,13 @@ function App() {
           >
             ✦ Новая задача
           </button>
-          {tasks.length === 0 && (
-            <button
-              type="button"
-              onClick={loadDemoTasks}
-              className="cursor-pointer rounded-full border border-gold-500/20 px-5 py-3 text-sm text-gold-600/70 transition-colors hover:border-gold-500/40 hover:text-gold-500"
-            >
-              Загрузить примеры
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setCategoriesOpen(true)}
+            className="cursor-pointer rounded-full border border-gold-500/30 px-5 py-3 text-sm text-gold-500/80 transition-colors hover:border-gold-500/50 hover:text-gold-400"
+          >
+            ⚙ Категории
+          </button>
           {tasks.length > 0 && (
             <button
               type="button"
@@ -145,6 +158,7 @@ function App() {
         </div>
 
         <CategoryFilter
+          categories={categories}
           active={activeCategory}
           onChange={setActiveCategory}
           counts={categoryCounts}
@@ -156,6 +170,7 @@ function App() {
               <TaskCard
                 key={task.id}
                 task={task}
+                categories={categories}
                 onToggle={toggleTask}
                 onEdit={openEdit}
                 onDelete={deleteTask}
@@ -185,8 +200,21 @@ function App() {
       <TaskFormModal
         open={modalOpen}
         task={editingTask}
+        categories={categories}
+        defaultCategoryId={defaultCategoryId}
         onClose={closeModal}
         onSave={handleSave}
+      />
+
+      <CategoryManagerModal
+        open={categoriesOpen}
+        categories={categories}
+        taskCounts={categoryCounts}
+        onClose={() => setCategoriesOpen(false)}
+        onAdd={addCategory}
+        onUpdate={updateCategory}
+        onDelete={handleDeleteCategory}
+        onReset={resetCategories}
       />
 
       {isTelegram && (

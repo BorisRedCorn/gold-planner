@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import { mockTasks } from '../data/mockTasks'
 import type { Task } from '../types/task'
 import type { TaskDraft } from '../utils/taskHelpers'
 import { createId } from '../utils/taskHelpers'
@@ -59,10 +58,6 @@ export function useTasks(userId?: number) {
     setTasks((prev) => prev.filter((t) => t.id !== id))
   }, [])
 
-  const loadDemoTasks = useCallback(() => {
-    setTasks(JSON.parse(JSON.stringify(mockTasks)) as Task[])
-  }, [])
-
   const clearAllTasks = useCallback(() => {
     setTasks([])
   }, [])
@@ -73,7 +68,6 @@ export function useTasks(userId?: number) {
     addTask,
     updateTask,
     deleteTask,
-    loadDemoTasks,
     clearAllTasks,
   }
 }
