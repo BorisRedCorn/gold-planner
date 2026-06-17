@@ -133,14 +133,14 @@ function App() {
           <button
             type="button"
             onClick={openCreate}
-            className="cursor-pointer rounded-full border border-gold-500/50 bg-gold-500/15 px-6 py-3 font-serif text-lg text-gold-300 shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all hover:bg-gold-500/25 hover:shadow-[0_0_30px_rgba(212,175,55,0.25)]"
+            className="app-btn min-h-11 cursor-pointer rounded-full border border-gold-500/50 bg-gold-500/15 px-6 py-3 font-serif text-lg text-gold-300 shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all hover:bg-gold-500/25"
           >
             ✦ Новая задача
           </button>
           <button
             type="button"
             onClick={() => setCategoriesOpen(true)}
-            className="cursor-pointer rounded-full border border-gold-500/30 px-5 py-3 text-sm text-gold-500/80 transition-colors hover:border-gold-500/50 hover:text-gold-400"
+            className="app-btn min-h-11 cursor-pointer rounded-full border border-gold-500/30 px-5 py-3 text-sm text-gold-500/80 transition-colors hover:border-gold-500/50 hover:text-gold-400"
           >
             ⚙ Категории
           </button>
@@ -150,7 +150,7 @@ function App() {
               onClick={() => {
                 if (window.confirm('Удалить все задачи?')) clearAllTasks()
               }}
-              className="cursor-pointer rounded-full border border-gold-500/10 px-5 py-3 text-sm text-zinc-600 transition-colors hover:border-red-500/30 hover:text-red-400/80"
+              className="app-btn min-h-11 cursor-pointer rounded-full border border-gold-500/10 px-5 py-3 text-sm text-zinc-600 transition-colors hover:border-red-500/30 hover:text-red-400/80"
             >
               Очистить всё
             </button>
@@ -222,7 +222,7 @@ function App() {
           type="button"
           onClick={openCreate}
           aria-label="Новая задача"
-          className="fixed right-5 bottom-6 z-40 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-gold-500/50 bg-gold-500/20 text-2xl text-gold-300 shadow-[0_0_30px_rgba(212,175,55,0.3)] backdrop-blur-sm"
+          className="app-btn fixed right-5 bottom-6 z-40 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-gold-500/50 bg-gold-500/20 text-2xl text-gold-300 shadow-[0_0_30px_rgba(212,175,55,0.3)] backdrop-blur-sm"
         >
           +
         </button>

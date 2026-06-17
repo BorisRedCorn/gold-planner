@@ -14,10 +14,10 @@ export function GoldCheckbox({ checked, onChange, id }: GoldCheckboxProps) {
       aria-checked={checked}
       id={id}
       onClick={onChange}
-      className="group relative flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-sm border border-gold-500/40 bg-black/40 transition-colors duration-300 hover:border-gold-400/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60"
+      className="group relative flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-gold-500/40 bg-black/40 transition-colors duration-300 hover:border-gold-400/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 touch-manipulation"
     >
       <motion.div
-        className="absolute inset-0 rounded-sm bg-gradient-to-br from-gold-300 via-gold-500 to-gold-700"
+        className="absolute inset-1 rounded-md bg-gradient-to-br from-gold-300 via-gold-500 to-gold-700"
         initial={false}
         animate={{
           scale: checked ? 1 : 0,

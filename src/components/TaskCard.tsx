@@ -1,9 +1,9 @@
-import { motion } from 'framer-motion'
+import type { Task } from '../types/task'
 import type { Category } from '../types/category'
 import { categoryIcon, categoryLabel } from '../types/category'
-import type { Task } from '../types/task'
 import { priorityLabels } from '../types/task'
 import { GoldCheckbox } from './GoldCheckbox'
+import { IconButton } from './IconButton'
 
 interface TaskCardProps {
   task: Task
@@ -37,36 +37,12 @@ export function TaskCard({ task, categories, onToggle, onEdit, onDelete }: TaskC
   }
 
   return (
-    <motion.article
-      layout
-      initial={false}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className="group glass-card gold-border-glow relative overflow-hidden rounded-xl border border-gold-500/20 p-6 transition-all duration-500"
-    >
-      <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gold-500/5 blur-2xl transition-all duration-500 group-hover:bg-gold-400/10" />
+    <article className="group glass-card gold-border-glow relative overflow-hidden rounded-xl border border-gold-500/20 p-4 sm:p-6">
+      <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gold-500/5 blur-2xl" />
       <div className="pointer-events-none absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-gold-600/5 blur-xl" />
 
-      <div className="absolute top-4 right-4 flex gap-2">
-        <button
-          type="button"
-          onClick={() => onEdit(task)}
-          aria-label="Редактировать"
-          className="cursor-pointer rounded-lg border border-gold-500/20 bg-black/30 px-2.5 py-1.5 text-sm text-gold-500/70 transition-all hover:border-gold-500/50 hover:text-gold-400"
-        >
-          ✎
-        </button>
-        <button
-          type="button"
-          onClick={handleDelete}
-          aria-label="Удалить"
-          className="cursor-pointer rounded-lg border border-red-500/20 bg-black/30 px-2.5 py-1.5 text-sm text-red-400/70 transition-all hover:border-red-500/50 hover:text-red-400"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div className="relative flex gap-5 pr-16">
-        <div className="pt-1">
+      <div className="relative z-10 flex items-start gap-3 sm:gap-5">
+        <div className="shrink-0 pt-1">
           <GoldCheckbox
             id={`task-${task.id}`}
             checked={task.completed}
@@ -75,48 +51,47 @@ export function TaskCard({ task, categories, onToggle, onEdit, onDelete }: TaskC
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-500/5 px-3 py-0.5 text-xs tracking-widest text-gold-400/90 uppercase">
-              <span className="text-gold-500">{categoryIcon(categories, task.category)}</span>
-              {categoryLabel(categories, task.category)}
-            </span>
-            <span
-              className={`rounded-full border px-2.5 py-0.5 text-xs tracking-wide uppercase ${priorityStyles[task.priority]}`}
-            >
-              {priorityLabels[task.priority]}
-            </span>
+          <div className="mb-3 flex items-start justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-500/5 px-3 py-0.5 text-xs tracking-widest text-gold-400/90 uppercase">
+                <span className="text-gold-500">{categoryIcon(categories, task.category)}</span>
+                {categoryLabel(categories, task.category)}
+              </span>
+              <span
+                className={`rounded-full border px-2.5 py-0.5 text-xs tracking-wide uppercase ${priorityStyles[task.priority]}`}
+              >
+                {priorityLabels[task.priority]}
+              </span>
+            </div>
+
+            <div className="flex shrink-0 gap-1.5">
+              <IconButton label="Редактировать" onClick={() => onEdit(task)}>
+                ✎
+              </IconButton>
+              <IconButton label="Удалить" variant="danger" onClick={handleDelete}>
+                ✕
+              </IconButton>
+            </div>
           </div>
 
-          <motion.h3
-            className="mb-2 font-serif text-xl leading-snug font-semibold tracking-wide md:text-2xl"
-            animate={{
-              color: task.completed ? 'rgba(184, 134, 11, 0.45)' : 'rgba(254, 243, 199, 0.95)',
-            }}
-            transition={{ duration: 0.4 }}
+          <h3
+            className={`mb-2 font-serif text-xl leading-snug font-semibold tracking-wide md:text-2xl ${
+              task.completed
+                ? 'text-gold-700/45 line-through decoration-gold-700/50'
+                : 'text-gold-100'
+            }`}
           >
-            <motion.span
-              className="inline-block"
-              animate={{
-                textDecoration: task.completed ? 'line-through' : 'none',
-                textDecorationColor: 'rgba(184, 134, 11, 0.5)',
-              }}
-              transition={{ duration: 0.4 }}
-            >
-              {task.title}
-            </motion.span>
-          </motion.h3>
+            {task.title}
+          </h3>
 
           {task.description && (
-            <motion.p
-              className="mb-4 text-base leading-relaxed text-zinc-400/90"
-              animate={{
-                opacity: task.completed ? 0.45 : 1,
-                color: task.completed ? 'rgba(161, 98, 7, 0.35)' : 'rgba(161, 161, 170, 0.9)',
-              }}
-              transition={{ duration: 0.4 }}
+            <p
+              className={`mb-4 text-base leading-relaxed ${
+                task.completed ? 'text-gold-800/35' : 'text-zinc-400/90'
+              }`}
             >
               {task.description}
-            </motion.p>
+            </p>
           )}
 
           <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-gold-500/10 pt-4 text-sm text-zinc-500">
@@ -144,6 +119,6 @@ export function TaskCard({ task, categories, onToggle, onEdit, onDelete }: TaskC
           </div>
         </div>
       </div>
-    </motion.article>
+    </article>
   )
 }

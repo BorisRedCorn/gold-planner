@@ -47,6 +47,9 @@ function initTelegramWebApp() {
     }
     if (typeof WebApp.setBackgroundColor === 'function') {
       WebApp.setBackgroundColor('#0a0a0a')
+
+    document.documentElement.dir = 'ltr'
+    document.body.dir = 'ltr'
     }
   } catch (error) {
     console.warn('Telegram WebApp init failed:', error)
